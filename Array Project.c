@@ -1,5 +1,5 @@
 /*
-Project Name: Array Manipulation
+Project Name: ARRAY MANIPULATION
 Created By: Sumit Roy Chyowdhury
 Student ID: 0182420012101249
 */
