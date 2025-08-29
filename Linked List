@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+
+struct Node{
+    int data;
+    Node *next;
+};
+
+Node *create_node (Node *head, int element){
+    Node *new_node= new Node;
+    if(new_node == NULL){
+        cout<<"Overflow"<<endl;
+        exit(1);
+    }
+    new_node->data=element;
+    new_node->next=head;
+    return new_node;
+}
+
+void print(Node *head){
+    Node *temp=head;
+    while(temp!=NULL){
+        cout<<temp->data<<" ";
+        temp=temp->next;
+    }
+}
+
+int main(){
+    Node *head=NULL;
+    Node *first, *second, *third;
+    first=create_node(head, 10);
+    head=first;
+
+    second=create_node(first->next, 20);
+    first->next=second;
+
+    third=create_node(second->next, 30);
+    second->next=third;
+
+    print(head);
+
+}
