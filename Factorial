@@ -1,13 +1,14 @@
-#include <iostream>
+#include<iostream>
 using namespace std;
 
-long long factorial(int n) {
-    if (n == 0) return 1;
-    return n * factorial(n - 1);
-}
+int main(){
+    int n,j=1;
+    cout<<"Enter number: ";
+    cin>>n;
 
-int main() {
-    int n;
-    cin >> n;
-    cout << "Factorial: " << factorial(n) << endl;
+    for(int i=1; i<=n; i++){
+        j*=i;
+    }
+    cout<<"Factorial is: "<<j;
+    return 0;
 }
