@@ -12,3 +12,20 @@ int main(){
     cout<<"Factorial is: "<<j;
     return 0;
 }
+
+//With Recursion
+
+#include <iostream>
+using namespace std;
+
+int factorial(int n) {
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+}
+
+int main() {
+    int n;
+    cout<<"Enter number: ";
+    cin >> n;
+    cout << "Factorial: " << factorial(n) << endl;
+}
