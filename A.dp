@@ -1,0 +1,202 @@
+//edit dist
+#include<bits/stdc++.h>
+using namespace std;
+
+int editDistance(string a, string b ){
+    int n= a.size();
+    int m= b.size();
+
+    int dp[101][101];
+
+    for(int i=0; i<=n; i++)
+        dp[i][0]=i;
+    for (int j=0; j<=m; j++)
+        dp[0][j]=j;
+
+    for(int i=1; i<=n; i++){
+        for(int j=1; j<=m; j++){
+            if (a[i-1] == b[j-1])
+                dp[i][j]=dp[i-1][j-1];
+            else{
+                int Op1=dp[i][j-1];
+                int Op2=dp[i-1][j];
+                int Op3=dp[i-1][j-1];
+                dp[i][j]= 1+ min ({Op1, Op2, Op3});
+            }
+        }
+    }
+    return dp[n][m];
+}
+int main(){
+    string a, b;
+    cout<<"Enter string a: ";
+    cin>>a;
+    cout<<"Enter string b: ";
+    cin>>b;
+
+    cout<<"Edit distance: "<<editDistance(a,b)<<endl;
+}
+
+
+
+//Coin cng
+#include <bits/stdc++.h>
+using namespace std;
+
+int dp[10001];
+int parentCoin[10001];
+
+int minCoins(int ammount,vector<int> &coins){
+    if (ammount == 0) return 0;
+    if (ammount < 0) return 1e9;
+    if (dp[ammount] != -1) return dp[ammount];
+
+    int best = 1e9;
+    int bestCoin = -1;
+
+    for(int i=0; i<coins.size(); i++){
+        int c=coins[i];
+        int result= 1+ minCoins(ammount-c, coins);
+
+        if(result<best){
+            best=result;
+            bestCoin=c;
+        }
+    }
+    parentCoin[ammount]= bestCoin;
+    return dp[ammount]= best;
+}
+
+int main(){
+    int n;
+    cout<<"Enter num of coins: ";
+    cin>>n;
+
+    vector<int>coins(n);
+    cout<<"Enter the coins: ";
+    for(int i=0;i<n; i++){
+        cin>>coins[i];
+    }
+
+    int ammount;
+    cout<<"Enter ammount: ";
+    cin>>ammount;
+
+    memset(dp,-1, sizeof(dp));
+    memset(parentCoin, -1, sizeof(parentCoin));
+
+    int ans= minCoins(ammount, coins);
+
+    if(ans>=1e9){
+        cout<<"not possible";
+        return 0;
+    }
+    cout<<"Min coin needed is= "<<ans<<endl;
+    cout<<"minimum coins are: ";
+    int x= ammount;
+    while(x>0){
+        cout<<parentCoin[x]<<" ";
+        x-=parentCoin[x];
+    }
+    cout<<endl;
+}
+
+
+
+
+//LCS
+#include <bits/stdc++.h>
+using namespace std;
+
+int dp[1001][1001];
+
+int LCS(string &a, string &b, int i, int j) {
+    if (i == a.size() || j == b.size()) return 0;
+    if (dp[i][j] != -1) return dp[i][j];
+
+    if (a[i] == b[j])
+        return dp[i][j] = 1 + LCS(a, b, i + 1, j + 1);
+
+    return dp[i][j] = max(LCS(a, b, i + 1, j),
+                          LCS(a, b, i, j + 1));
+}
+
+string buildLCS(string &a, string &b, int i, int j) {
+    string res = "";
+    while (i < a.size() && j < b.size()) {
+        if (a[i] == b[j]) {
+            res += a[i];
+            i++;
+            j++;
+        } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+            i++;
+        } else {
+            j++;
+        }
+    }
+    return res;
+}
+
+int main() {
+    string a, b;
+    cin >> a >> b;
+
+    memset(dp, -1, sizeof(dp));
+
+    cout << LCS(a, b, 0, 0) << endl;
+    cout << buildLCS(a, b, 0, 0) << endl;
+}
+
+
+
+
+//LIS
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> LIS(vector<int>& nums) {
+    int n = nums.size();
+
+    vector<int> lis(n, 1);
+    vector<int> prev(n, -1);
+
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (nums[i] > nums[j] && lis[i] < lis[j] + 1) {
+                lis[i] = lis[j] + 1;
+                prev[i] = j;
+            }
+        }
+    }
+
+    int maxIndex = distance(lis.begin(), max_element(lis.begin(), lis.end()));
+
+    vector<int> subsequence;
+    while (maxIndex != -1) {
+        subsequence.push_back(nums[maxIndex]);
+        maxIndex = prev[maxIndex];
+    }
+
+    reverse(subsequence.begin(), subsequence.end());
+    return subsequence;
+}
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> nums(n);
+    for (int i = 0; i < n; i++) {
+        cin >> nums[i];
+    }
+
+    vector<int> subsequence = LIS(nums);
+
+    cout << subsequence.size() << endl;
+    for (int num : subsequence) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
