@@ -1,0 +1,39 @@
+1. Show all patients with doctor names using LEFT JOIN
+
+SELECT p.name AS patient_name, d.name AS doctor_name FROM patients p LEFT JOIN doctors d ON p.doctor_id = d.doctor_id; 
+
+2. Show all doctors with patient names using RIGHT JOIN
+
+SELECT d.name AS doctor_name, p.name AS patient_name FROM patients p RIGHT JOIN doctors d ON p.doctor_id = d.doctor_id; 
+
+3. Show patient appointment details using NATURAL JOIN
+
+SELECT * FROM appointments NATURAL JOIN patients NATURAL JOIN doctors; 
+
+4. Show all patients and appointment records using FULL OUTER JOIN
+
+SELECT * FROM patients p FULL OUTER JOIN appointments a ON p.patient_id = a.patient_id; 
+
+5. Find the average age of patients
+SQL
+SELECT AVG(age) AS avg_age
+FROM patients;
+
+6.  Count patients from each city using GROUP BY
+(assuming city column exists)
+SQL
+SELECT city, COUNT(*) AS total_patients
+FROM patients
+GROUP BY city;
+7.  Show doctors having more than 1 patient using HAVING
+SQL
+SELECT doctor_id, COUNT(patient_id) AS total_patients
+FROM patients
+GROUP BY doctor_id
+HAVING COUNT(patient_id) > 1;
+8.  Show appointments by highest fee using ORDER BY
+(assuming fee column exists)
+SQL
+SELECT *
+FROM appointments
+ORDER BY fee DESC;
