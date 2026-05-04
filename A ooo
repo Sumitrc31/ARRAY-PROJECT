@@ -1,0 +1,157 @@
+--Online Course --
+class Course {
+    String courseName;
+    double baseFee;
+
+    Course(String courseName, double baseFee) {
+        this.courseName = courseName;
+        this.baseFee = baseFee;
+    }
+
+    double calculateFee() {
+        return baseFee;
+    }
+}
+
+class OnlineCourse extends Course {
+
+    OnlineCourse(String courseName, double baseFee) {
+        super(courseName, baseFee);
+    }
+
+    @Override
+    double calculateFee() {
+        return baseFee * 0.9;
+    }
+}
+
+class OfflineCourse extends Course {
+
+    OfflineCourse(String courseName, double baseFee) {
+        super(courseName, baseFee);
+    }
+
+    @Override
+    double calculateFee() {
+        return baseFee * 1.2;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        Course[] courses = new Course[3];
+
+        courses[0] = new OnlineCourse("Java Programming", 5000);
+        courses[1] = new OfflineCourse("Database Systems", 6000);
+        courses[2] = new OnlineCourse("Web Development", 4000);
+
+        for (Course c : courses) {
+            System.out.println("Course: " + c.courseName);
+            System.out.println("Fee: " + c.calculateFee());
+            System.out.println("-------------------");
+        }
+    }
+}
+
+
+--------Bank Management System--------------------------
+class BankAccount {
+    private double balance;
+
+    BankAccount(double balance) {
+        this.balance = balance;
+    }
+
+    void deposit(double amount) {
+        balance += amount;
+    }
+
+    void withdraw(double amount) {
+        if(amount > balance) {
+            throw new ArithmeticException("Insufficient Balance");
+        }
+        balance -= amount;
+    }
+
+    void display() {
+        System.out.println("Balance: " + balance);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount b = new BankAccount(1000);
+
+        b.deposit(500);
+        b.withdraw(300);
+        b.display();
+
+    }
+}
+
+------------Student Marks Validation--------------
+class Student {
+    private int marks;
+
+    Student(int marks) {
+        if(marks < 0 || marks > 100) {
+            throw new ArithmeticException("Invalid Marks");
+        }
+        this.marks = marks;
+    }
+
+    void display() {
+        System.out.println("Marks: " + marks);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Student s1 = new Student(85);
+        s1.display();
+
+    }
+}
+
+--------------Shape System--------------
+abstract class Shape {
+    abstract void area();
+}
+
+class Circle extends Shape {
+    double r;
+
+    Circle(double r) {
+        this.r = r;
+    }
+
+    void area() {
+        System.out.println("Circle Area: " + 3.14 * r * r);
+    }
+}
+
+class Rectangle extends Shape {
+    double l, w;
+
+    Rectangle(double l, double w) {
+        this.l = l;
+        this.w = w;
+    }
+
+    void area() {
+        System.out.println("Rectangle Area: " + (l * w));
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Shape s1 = new Circle(5);
+        Shape s2 = new Rectangle(4, 6);
+
+        s1.area();
+        s2.area();
+    }
+}
+
+--------------------
