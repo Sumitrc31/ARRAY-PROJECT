@@ -1,157 +1,442 @@
---Online Course --
-class Course {
-    String courseName;
-    double baseFee;
+CREATE DATABASE CollegeCourseDB;
+USE CollegeCourseDB;
 
-    Course(String courseName, double baseFee) {
-        this.courseName = courseName;
-        this.baseFee = baseFee;
-    }
+CREATE TABLE Departments(dept_id VARCHAR(10) PRIMARY KEY, dept_name VARCHAR(50), head VARCHAR(50));
+CREATE TABLE Students(student_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), email VARCHAR(100), age INT, dept_id VARCHAR(10), FOREIGN KEY (dept_id) REFERENCES Departments(dept_id));
+CREATE TABLE Courses(course_id VARCHAR(10) PRIMARY KEY, course_name VARCHAR(50), dept_id VARCHAR(10), credits INT, FOREIGN KEY (dept_id) REFERENCES Departments(dept_id));
+CREATE TABLE Instructors(instructor_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), dept_id VARCHAR(10), salary INT, FOREIGN KEY (dept_id) REFERENCES Departments(dept_id));
+CREATE TABLE Enrollments(enroll_id VARCHAR(10) PRIMARY KEY, student_id VARCHAR(10), course_id VARCHAR(10), grade DECIMAL(3,2), FOREIGN KEY (student_id) REFERENCES Students(student_id), FOREIGN KEY (course_id) REFERENCES Courses(course_id));
+CREATE TABLE Teaches(teaches_id VARCHAR(10) PRIMARY KEY, instructor_id VARCHAR(10), course_id VARCHAR(10), semester VARCHAR(20), FOREIGN KEY (instructor_id) REFERENCES Instructors(instructor_id), FOREIGN KEY (course_id) REFERENCES Courses(course_id));
 
-    double calculateFee() {
-        return baseFee;
-    }
-}
+INSERT INTO Departments VALUES ('D1','CSE','Dr. Rahman');
+INSERT INTO Departments VALUES ('D2','EEE','Dr. Karim');
+INSERT INTO Departments VALUES ('D3','BBA','Dr. Sultana');
+INSERT INTO Departments VALUES ('D4','ENG','Dr. Khan');
+INSERT INTO Departments VALUES ('D5','LAW','Dr. Ali');
+INSERT INTO Departments VALUES ('D6','ARCH','Dr. Hasan');
 
-class OnlineCourse extends Course {
+INSERT INTO Students VALUES ('S1','Amin','amin@gmail.com',21,'D1');
+INSERT INTO Students VALUES ('S2','Rafi','rafi@gmail.com',22,'D2');
+INSERT INTO Students VALUES ('S3','Nila','nila@gmail.com',20,'D1');
+INSERT INTO Students VALUES ('S4','Joya','joya@gmail.com',23,'D3');
+INSERT INTO Students VALUES ('S5','Sami','sami@gmail.com',21,'D4');
+INSERT INTO Students VALUES ('S6','Tina','tina@gmail.com',22,'D2');
 
-    OnlineCourse(String courseName, double baseFee) {
-        super(courseName, baseFee);
-    }
+INSERT INTO Courses VALUES ('C1','Database','D1',3);
+INSERT INTO Courses VALUES ('C2','Circuit','D2',4);
+INSERT INTO Courses VALUES ('C3','Accounting','D3',3);
+INSERT INTO Courses VALUES ('C4','English','D4',2);
+INSERT INTO Courses VALUES ('C5','Law Intro','D5',3);
+INSERT INTO Courses VALUES ('C6','Architecture Basics','D6',3);
 
-    @Override
-    double calculateFee() {
-        return baseFee * 0.9;
-    }
-}
+INSERT INTO Instructors VALUES ('I1','Rahman','D1',50000);
+INSERT INTO Instructors VALUES ('I2','Karim','D2',52000);
+INSERT INTO Instructors VALUES ('I3','Sultana','D3',48000);
+INSERT INTO Instructors VALUES ('I4','Khan','D4',45000);
+INSERT INTO Instructors VALUES ('I5','Ali','D5',60000);
+INSERT INTO Instructors VALUES ('I6','Hasan','D6',55000);
 
-class OfflineCourse extends Course {
+INSERT INTO Enrollments VALUES ('E1','S1','C1',3.80);
+INSERT INTO Enrollments VALUES ('E2','S2','C2',3.50);
+INSERT INTO Enrollments VALUES ('E3','S3','C1',3.90);
+INSERT INTO Enrollments VALUES ('E4','S4','C3',3.20);
+INSERT INTO Enrollments VALUES ('E5','S5','C4',3.60);
+INSERT INTO Enrollments VALUES ('E6','S6','C2',3.75);
 
-    OfflineCourse(String courseName, double baseFee) {
-        super(courseName, baseFee);
-    }
+INSERT INTO Teaches VALUES ('T1','I1','C1','Spring');
+INSERT INTO Teaches VALUES ('T2','I2','C2','Fall');
+INSERT INTO Teaches VALUES ('T3','I3','C3','Summer');
+INSERT INTO Teaches VALUES ('T4','I4','C4','Spring');
+INSERT INTO Teaches VALUES ('T5','I5','C5','Fall');
+INSERT INTO Teaches VALUES ('T6','I6','C6','Summer');
 
-    @Override
-    double calculateFee() {
-        return baseFee * 1.2;
-    }
-}
+UPDATE Enrollments SET grade = 4.00 WHERE enroll_id = 'E2';
+UPDATE Courses SET credits = 4 WHERE course_id = 'C4';
 
-public class Main {
-    public static void main(String[] args) {
-
-        Course[] courses = new Course[3];
-
-        courses[0] = new OnlineCourse("Java Programming", 5000);
-        courses[1] = new OfflineCourse("Database Systems", 6000);
-        courses[2] = new OnlineCourse("Web Development", 4000);
-
-        for (Course c : courses) {
-            System.out.println("Course: " + c.courseName);
-            System.out.println("Fee: " + c.calculateFee());
-            System.out.println("-------------------");
-        }
-    }
-}
+DELETE FROM Enrollments WHERE enroll_id = 'E6';
+DELETE FROM Courses WHERE course_id = 'C6';
 
 
---------Bank Management System--------------------------
-class BankAccount {
-    private double balance;
+/* Find the average grade of students enrolled in "Database Systems" */
+SELECT AVG(grade) FROM Enrollments e JOIN Courses c ON e.course_id=c.course_id WHERE c.course_name='Database';
 
-    BankAccount(double balance) {
-        this.balance = balance;
-    }
+ /* List the number of courses offered by each department */
+SELECT dept_id, COUNT(course_id) FROM Courses GROUP BY dept_id;
 
-    void deposit(double amount) {
-        balance += amount;
-    }
+ /* Find the total number of students in each course */
+SELECT course_id, COUNT(student_id) FROM Enrollments GROUP BY course_id;
 
-    void withdraw(double amount) {
-        if(amount > balance) {
-            throw new ArithmeticException("Insufficient Balance");
-        }
-        balance -= amount;
-    }
+ /* List all students who are enrolled in at least one course and their department */
+SELECT DISTINCT s.student_id, s.name, s.dept_id FROM Students s JOIN Enrollments e ON s.student_id=e.student_id;
 
-    void display() {
-        System.out.println("Balance: " + balance);
-    }
-}
+ /* Find the max salary of instructors in each department */
+SELECT dept_id, MAX(salary) FROM Instructors GROUP BY dept_id;
 
-public class Main {
-    public static void main(String[] args) {
-        BankAccount b = new BankAccount(1000);
 
-        b.deposit(500);
-        b.withdraw(300);
-        b.display();
+-- B --
 
-    }
-}
+/* Get all students with their course name and instructor name (INNER JOIN) */
+SELECT s.student_id, s.name, c.course_name, i.name 
+FROM Students s 
+INNER JOIN Enrollments e ON s.student_id=e.student_id 
+INNER JOIN Courses c ON e.course_id=c.course_id 
+INNER JOIN Teaches t ON c.course_id=t.course_id 
+INNER JOIN Instructors i ON t.instructor_id=i.instructor_id;
 
-------------Student Marks Validation--------------
-class Student {
-    private int marks;
+/* List all courses with the names of enrolled students (LEFT JOIN) */
+SELECT c.course_id, c.course_name, s.name 
+FROM Courses c 
+LEFT JOIN Enrollments e ON c.course_id=e.course_id 
+LEFT JOIN Students s ON e.student_id=s.student_id;
 
-    Student(int marks) {
-        if(marks < 0 || marks > 100) {
-            throw new ArithmeticException("Invalid Marks");
-        }
-        this.marks = marks;
-    }
+/* Show all instructors and the courses they teach, including those who teach none */
+SELECT i.instructor_id, i.name, c.course_name 
+FROM Instructors i 
+LEFT JOIN Teaches t ON i.instructor_id=t.instructor_id 
+LEFT JOIN Courses c ON t.course_id=c.course_id;
 
-    void display() {
-        System.out.println("Marks: " + marks);
-    }
-}
+/* List all departments and the students in them (FULL JOIN) */
+SELECT d.dept_id, d.dept_name, s.student_id, s.name 
+FROM Departments d 
+LEFT JOIN Students s ON d.dept_id=s.dept_id
+UNION
+SELECT d.dept_id, d.dept_name, s.student_id, s.name 
+FROM Departments d 
+RIGHT JOIN Students s ON d.dept_id=s.dept_id;
 
-public class Main {
-    public static void main(String[] args) {
-        Student s1 = new Student(85);
-        s1.display();
+/* Show all students and their grades, even if not enrolled */
+SELECT s.student_id, s.name, e.grade 
+FROM Students s 
+LEFT JOIN Enrollments e ON s.student_id=e.student_id;
 
-    }
-}
+/* List instructors and all courses, including those without assigned instructors (FULL JOIN) */
+SELECT i.instructor_id, i.name, c.course_name 
+FROM Instructors i 
+LEFT JOIN Teaches t ON i.instructor_id=t.instructor_id
+LEFT JOIN Courses c ON t.course_id=c.course_id
+UNION
+SELECT i.instructor_id, i.name, c.course_name 
+FROM Instructors i 
+RIGHT JOIN Teaches t ON i.instructor_id=t.instructor_id
+RIGHT JOIN Courses c ON t.course_id=c.course_id;
 
---------------Shape System--------------
-abstract class Shape {
-    abstract void area();
-}
+/* List students who are not enrolled in any course */
+SELECT s.student_id, s.name 
+FROM Students s 
+LEFT JOIN Enrollments e ON s.student_id=e.student_id 
+WHERE e.student_id IS NULL;
 
-class Circle extends Shape {
-    double r;
+/* Find all instructors who teach in Semester 2 */
+SELECT i.instructor_id, i.name 
+FROM Instructors i 
+INNER JOIN Teaches t ON i.instructor_id=t.instructor_id 
+WHERE t.semester='Semester 2';
 
-    Circle(double r) {
-        this.r = r;
-    }
+/* Get all students and the department heads */
+SELECT s.student_id, s.name, d.head 
+FROM Students s 
+INNER JOIN Departments d ON s.dept_id=d.dept_id;
 
-    void area() {
-        System.out.println("Circle Area: " + 3.14 * r * r);
-    }
-}
+/* Show all courses with department names, even if not assigned to any department */
+SELECT c.course_id, c.course_name, d.dept_name 
+FROM Courses c 
+LEFT JOIN Departments d ON c.dept_id=d.dept_id;
 
-class Rectangle extends Shape {
-    double l, w;
 
-    Rectangle(double l, double w) {
-        this.l = l;
-        this.w = w;
-    }
+----------------------------------------------------------------------------------------------------
 
-    void area() {
-        System.out.println("Rectangle Area: " + (l * w));
-    }
-}
 
-public class Main {
-    public static void main(String[] args) {
-        Shape s1 = new Circle(5);
-        Shape s2 = new Rectangle(4, 6);
+CREATE DATABASE HospitalDB;
+USE HospitalDB;
 
-        s1.area();
-        s2.area();
-    }
-}
+CREATE TABLE Departments(department_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50));
 
---------------------
+CREATE TABLE Patients(patient_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), age INT, gender VARCHAR(10), contact VARCHAR(20));
+
+CREATE TABLE Doctors(doctor_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), specialty VARCHAR(50), department_id VARCHAR(10), FOREIGN KEY (department_id) REFERENCES Departments(department_id));
+
+CREATE TABLE Appointments(appointment_id VARCHAR(10) PRIMARY KEY, patient_id VARCHAR(10), doctor_id VARCHAR(10), date DATE, time TIME, diagnosis VARCHAR(100), FOREIGN KEY (patient_id) REFERENCES Patients(patient_id), FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id));
+
+CREATE TABLE Medications(med_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), cost INT);
+
+CREATE TABLE Prescriptions(prescription_id VARCHAR(10) PRIMARY KEY, appointment_id VARCHAR(10), med_id VARCHAR(10), dosage VARCHAR(50), FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id), FOREIGN KEY (med_id) REFERENCES Medications(med_id));
+
+INSERT INTO Departments VALUES ('D1','Cardiology'), ('D2','Neurology'), ('D3','ENT'), ('D4','Orthopedic'), ('D5','General');
+
+INSERT INTO Patients VALUES ('P1','Rahim',30,'Male','01711111111'), ('P2','Karim',40,'Male','01722222222'), ('P3','Nila',25,'Female','01733333333'), ('P4','Sami',35,'Male','01744444444'), ('P5','Tina',28,'Female','01755555555');
+
+INSERT INTO Doctors VALUES ('DR1','Dr. Ahmed','Heart','D1'), ('DR2','Dr. Karim','Brain','D2'), ('DR3','Dr. Sultana','ENT','D3'), ('DR4','Dr. Khan','Bone','D4'), ('DR5','Dr. Ali','General','D5');
+
+INSERT INTO Appointments VALUES ('A1','P1','DR1','2026-05-01','10:00','Fever'), ('A2','P2','DR2','2026-05-02','11:00','Headache'), ('A3','P3','DR3','2026-05-03','12:00','Ear pain'), ('A4','P4','DR4','2026-05-04','13:00','Fracture'), ('A5','P5','DR5','2026-05-05','14:00','Checkup');
+
+INSERT INTO Medications VALUES ('M1','Paracetamol',10), ('M2','Napa Extra',15), ('M3','Amoxicillin',20), ('M4','Ibuprofen',25), ('M5','Antibiotic',30);
+
+INSERT INTO Prescriptions VALUES ('PR1','A1','M1','1-0-1'), ('PR2','A2','M2','1-1-1'), ('PR3','A3','M3','0-1-1'), ('PR4','A4','M4','1-0-0'), ('PR5','A5','M5','1-1-0');
+
+UPDATE Patients SET age = 31 WHERE patient_id = 'P1';
+
+UPDATE Medications SET cost = 12 WHERE med_id = 'M1';
+
+DELETE FROM Prescriptions WHERE prescription_id = 'PR5';
+
+INSERT INTO Patients VALUES ('P6','Joya',27,'Female','01766666666');
+
+
+/* Find the total number of appointments per doctor */
+SELECT doctor_id, COUNT(appointment_id) FROM Appointments GROUP BY doctor_id;
+
+/* List the average cost of medications prescribed per department */
+SELECT d.department_id, AVG(m.cost)
+FROM Departments d
+JOIN Doctors dr ON d.department_id=dr.department_id
+JOIN Appointments a ON dr.doctor_id=a.doctor_id
+JOIN Prescriptions p ON a.appointment_id=p.appointment_id
+JOIN Medications m ON p.med_id=m.med_id
+GROUP BY d.department_id;
+
+/* Count how many patients are assigned to each doctor */
+SELECT doctor_id, COUNT(DISTINCT patient_id)
+FROM Appointments
+GROUP BY doctor_id;
+
+/* Find the total number of appointments in a week */
+SELECT COUNT(*) FROM Appointments
+WHERE date BETWEEN '2026-05-01' AND '2026-05-07';
+
+/* Get the maximum dosage prescribed for any medication */
+SELECT MAX(dosage) FROM Prescriptions;
+
+
+-- B --
+
+/* List all appointments with doctor and patient names (INNER JOIN) */
+SELECT a.appointment_id, p.name, d.name
+FROM Appointments a
+INNER JOIN Patients p ON a.patient_id=p.patient_id
+INNER JOIN Doctors d ON a.doctor_id=d.doctor_id;
+
+/* Show all doctors and their departments (LEFT JOIN) */
+SELECT d.doctor_id, d.name, dep.name
+FROM Doctors d
+LEFT JOIN Departments dep ON d.department_id=dep.department_id;
+
+/* Get all patients and their appointments, even if some have none (RIGHT JOIN) */
+SELECT p.patient_id, p.name, a.appointment_id
+FROM Appointments a
+RIGHT JOIN Patients p ON a.patient_id=p.patient_id;
+
+/* Show all medications prescribed and appointments (FULL JOIN) */
+SELECT m.med_id, m.name, a.appointment_id
+FROM Medications m
+LEFT JOIN Prescriptions p ON m.med_id=p.med_id
+LEFT JOIN Appointments a ON p.appointment_id=a.appointment_id
+UNION
+SELECT m.med_id, m.name, a.appointment_id
+FROM Medications m
+RIGHT JOIN Prescriptions p ON m.med_id=p.med_id
+RIGHT JOIN Appointments a ON p.appointment_id=a.appointment_id;
+
+/* List doctors and all appointments including those with no appointments (LEFT JOIN) */
+SELECT d.doctor_id, d.name, a.appointment_id
+FROM Doctors d
+LEFT JOIN Appointments a ON d.doctor_id=a.doctor_id;
+
+/* Get all patients with their prescribed medication (INNER JOIN) */
+SELECT p.patient_id, p.name, m.name
+FROM Patients p
+INNER JOIN Appointments a ON p.patient_id=a.patient_id
+INNER JOIN Prescriptions pr ON a.appointment_id=pr.appointment_id
+INNER JOIN Medications m ON pr.med_id=m.med_id;
+
+/* Show all prescriptions and related doctors (RIGHT JOIN) */
+SELECT pr.prescription_id, d.name, m.name
+FROM Doctors d
+RIGHT JOIN Appointments a ON d.doctor_id=a.doctor_id
+RIGHT JOIN Prescriptions pr ON a.appointment_id=pr.appointment_id
+RIGHT JOIN Medications m ON pr.med_id=m.med_id;
+
+/* List all patients with their doctor's specialty (INNER JOIN) */
+SELECT p.patient_id, p.name, d.specialty
+FROM Patients p
+INNER JOIN Appointments a ON p.patient_id=a.patient_id
+INNER JOIN Doctors d ON a.doctor_id=d.doctor_id;
+
+/* Display all medications and doctors who prescribed them (FULL JOIN) */
+SELECT m.med_id, m.name, d.name
+FROM Medications m
+LEFT JOIN Prescriptions pr ON m.med_id=pr.med_id
+LEFT JOIN Appointments a ON pr.appointment_id=a.appointment_id
+LEFT JOIN Doctors d ON a.doctor_id=d.doctor_id
+UNION
+SELECT m.med_id, m.name, d.name
+FROM Medications m
+RIGHT JOIN Prescriptions pr ON m.med_id=pr.med_id
+RIGHT JOIN Appointments a ON pr.appointment_id=a.appointment_id
+RIGHT JOIN Doctors d ON a.doctor_id=d.doctor_id;
+
+/* Display all medications and doctors who prescribed them (FULL JOIN) */
+SELECT m.med_id, m.name, d.name
+FROM Medications m
+LEFT JOIN Prescriptions pr ON m.med_id=pr.med_id
+LEFT JOIN Appointments a ON pr.appointment_id=a.appointment_id
+LEFT JOIN Doctors d ON a.doctor_id=d.doctor_id
+UNION
+SELECT m.med_id, m.name, d.name
+FROM Medications m
+RIGHT JOIN Prescriptions pr ON m.med_id=pr.med_id
+RIGHT JOIN Appointments a ON pr.appointment_id=a.appointment_id
+RIGHT JOIN Doctors d ON a.doctor_id=d.doctor_id;
+
+
+----------------------------------------------------------------------------------------------------
+
+
+CREATE DATABASE LibraryDB;
+USE LibraryDB;
+
+CREATE TABLE Books(book_id VARCHAR(10) PRIMARY KEY, title VARCHAR(100), author VARCHAR(50), genre VARCHAR(30), pub_year INT);
+
+CREATE TABLE Members(member_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), email VARCHAR(100), join_date DATE);
+
+CREATE TABLE Librarians(lib_id VARCHAR(10) PRIMARY KEY, name VARCHAR(50), shift_time VARCHAR(20));
+
+CREATE TABLE Issues(issue_id VARCHAR(10) PRIMARY KEY, book_id VARCHAR(10), member_id VARCHAR(10), issue_date DATE, return_date DATE, FOREIGN KEY (book_id) REFERENCES Books(book_id), FOREIGN KEY (member_id) REFERENCES Members(member_id));
+
+CREATE TABLE Fines(fine_id VARCHAR(10) PRIMARY KEY, issue_id VARCHAR(10), amount INT, paid VARCHAR(10), FOREIGN KEY (issue_id) REFERENCES Issues(issue_id));
+
+CREATE TABLE Reservations(res_id VARCHAR(10) PRIMARY KEY, book_id VARCHAR(10), member_id VARCHAR(10), res_date DATE, FOREIGN KEY (book_id) REFERENCES Books(book_id), FOREIGN KEY (member_id) REFERENCES Members(member_id));
+
+INSERT INTO Books VALUES 
+('B1','Database Systems','Elmasri','CS',2018),
+('B2','Harry Potter','Rowling','Fantasy',2001),
+('B3','Clean Code','Martin','Programming',2008),
+('B4','Physics Basics','Newton','Science',2015),
+('B5','Data Structures','Weiss','CS',2017);
+
+INSERT INTO Members VALUES 
+('M1','Rahim','rahim@gmail.com','2025-01-10'),
+('M2','Karim','karim@gmail.com','2025-02-15'),
+('M3','Nila','nila@gmail.com','2025-03-12'),
+('M4','Sami','sami@gmail.com','2025-04-01'),
+('M5','Tina','tina@gmail.com','2025-04-20');
+
+INSERT INTO Librarians VALUES 
+('L1','Mr A','Morning'),
+('L2','Mr B','Evening'),
+('L3','Ms C','Night'),
+('L4','Mr D','Morning'),
+('L5','Ms E','Evening');
+
+INSERT INTO Issues VALUES 
+('I1','B1','M1','2026-05-01','2026-05-10'),
+('I2','B2','M2','2026-05-02','2026-05-12'),
+('I3','B3','M3','2026-05-03','2026-05-13'),
+('I4','B4','M4','2026-05-04','2026-05-14'),
+('I5','B5','M5','2026-05-05','2026-05-15');
+
+INSERT INTO Fines VALUES 
+('F1','I1',20,'No'),
+('F2','I2',0,'Yes'),
+('F3','I3',15,'No'),
+('F4','I4',10,'Yes'),
+('F5','I5',0,'Yes');
+
+INSERT INTO Reservations VALUES 
+('R1','B1','M2','2026-05-06'),
+('R2','B2','M3','2026-05-07'),
+('R3','B3','M4','2026-05-08'),
+('R4','B4','M5','2026-05-09'),
+('R5','B5','M1','2026-05-10');UPDATE Books SET pub_year = 2020 WHERE book_id = 'B1';
+
+UPDATE Fines SET amount = 25 WHERE fine_id = 'F1';
+
+DELETE FROM Reservations WHERE res_id = 'R5';
+
+INSERT INTO Members VALUES ('M6','Joya','joya@gmail.com','2026-05-11');
+
+
+/* Count the total number of books issued per member */
+SELECT member_id, COUNT(issue_id) 
+FROM Issues 
+GROUP BY member_id;
+/* Calculate the total fine collected */
+SELECT SUM(amount) 
+FROM Fines 
+WHERE paid='No';
+/* Get the average number of days to return a book */
+SELECT AVG(DATEDIFF(return_date, issue_date)) 
+FROM Issues;
+/* Find the number of books reserved by each member */
+SELECT member_id, COUNT(res_id) 
+FROM Reservations 
+GROUP BY member_id;
+/* List the top 2 members with the most book issues */
+SELECT member_id, COUNT(issue_id) AS total_issues 
+FROM Issues 
+GROUP BY member_id 
+ORDER BY total_issues DESC 
+LIMIT 2;
+
+-- B --
+
+/* List all issued books with member names (INNER JOIN) */
+SELECT i.issue_id, b.title, m.name 
+FROM Issues i 
+INNER JOIN Books b ON i.book_id=b.book_id 
+INNER JOIN Members m ON i.member_id=m.member_id;
+/* Show all books and who reserved them (LEFT JOIN) */
+SELECT b.book_id, b.title, m.name 
+FROM Books b 
+LEFT JOIN Reservations r ON b.book_id=r.book_id 
+LEFT JOIN Members m ON r.member_id=m.member_id;
+/* List all members and books they issued, even if none (RIGHT JOIN) */
+SELECT m.member_id, m.name, b.title 
+FROM Issues i 
+RIGHT JOIN Members m ON i.member_id=m.member_id 
+LEFT JOIN Books b ON i.book_id=b.book_id;
+/* Get all fine details with member names (FULL JOIN) */
+SELECT f.fine_id, f.amount, m.name 
+FROM Fines f 
+LEFT JOIN Issues i ON f.issue_id=i.issue_id 
+LEFT JOIN Members m ON i.member_id=m.member_id
+UNION
+SELECT f.fine_id, f.amount, m.name 
+FROM Fines f 
+RIGHT JOIN Issues i ON f.issue_id=i.issue_id 
+RIGHT JOIN Members m ON i.member_id=m.member_id;
+
+/* Show librarians and the books issued during their shift (LEFT JOIN) */
+SELECT l.lib_id, l.name, b.title 
+FROM Librarians l 
+LEFT JOIN Issues i ON 1=1 
+LEFT JOIN Books b ON i.book_id=b.book_id;
+/* Display all members and their reservations (INNER JOIN) */
+SELECT m.member_id, m.name, b.title 
+FROM Members m 
+INNER JOIN Reservations r ON m.member_id=r.member_id 
+INNER JOIN Books b ON r.book_id=b.book_id;
+/* Show all books and reservation status (RIGHT JOIN) */
+SELECT b.book_id, b.title, r.res_id 
+FROM Reservations r 
+RIGHT JOIN Books b ON r.book_id=b.book_id;
+/* List members and their total fines (INNER JOIN) */
+SELECT m.member_id, m.name, SUM(f.amount) 
+FROM Members m 
+INNER JOIN Issues i ON m.member_id=i.member_id 
+INNER JOIN Fines f ON i.issue_id=f.issue_id 
+GROUP BY m.member_id, m.name;
+/* Display all books, including those never issued (FULL JOIN) */
+SELECT b.book_id, b.title, i.issue_id 
+FROM Books b 
+LEFT JOIN Issues i ON b.book_id=i.book_id
+UNION
+SELECT b.book_id, b.title, i.issue_id 
+FROM Books b 
+RIGHT JOIN Issues i ON b.book_id=i.book_id;
+/* Show all members and librarians they interacted with (LEFT JOIN) */
+SELECT m.member_id, m.name, l.name 
+FROM Members m 
+LEFT JOIN Issues i ON m.member_id=i.member_id 
+LEFT JOIN Librarians l ON 1=1;
+
+
